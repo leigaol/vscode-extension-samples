@@ -12,36 +12,52 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(disposable);
 	let someTrackingIdCounter = 0;
+	const l = [`print('Hello World')`];
+
+	function delay(ms: number) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
+
+
 
 	const provider: vscode.InlineCompletionItemProvider = {
 		provideInlineCompletionItems: async (document, position, context, token) => {
-			console.log('provideInlineCompletionItems triggered');
+			console.log(`provideInlineCompletionItems triggered kind = ${context.triggerKind}`);
 
-			const regexp = /\/\/ \[(.+),(.+)\):(.*)/;
-			if (position.line <= 0) {
+			if (position.line < 0) {
 				return;
 			}
+			const start = position;
+			const end = position;
+			const items = l.map(i => {
+				return {
+					insertText: i,
+					range: new vscode.Range(start, end),
+					someTrackingId: someTrackingIdCounter++,
+				};
+			});
+			console.log(`# of reco is ${l.length}`);
 
-			const lineBefore = document.lineAt(position.line - 1).text;
-			const matches = lineBefore.match(regexp);
-			if (matches) {
-				const start = matches[1];
-				const startInt = parseInt(start, 10);
-				const end = matches[2];
-				const endInt =
-					end === '*' ? document.lineAt(position.line).text.length : parseInt(end, 10);
-				const insertText = matches[3].replace(/\\n/g, '\n');
+			return items as MyInlineCompletionItem[];
 
-				return [
-					{
-						insertText,
-						range: new vscode.Range(position.line, startInt, position.line, endInt),
-						someTrackingId: someTrackingIdCounter++,
-					},
-				] as MyInlineCompletionItem[];
-			}
 		},
 	};
+
+	const pagination = async () => {
+		for (let i = 0; i < 100; i++) {
+			l.push('recommendation #' + i.toString());
+			await delay(2000);
+			console.log(`Get ${i} th paginated response`);
+			const editor = vscode.window.activeTextEditor;
+			const w = new vscode.CancellationTokenSource;
+			if (editor) {
+				//provider.provideInlineCompletionItems(editor.document, editor?.selection.active, { triggerKind: 1, selectedCompletionInfo: undefined }, w.token);
+			}
+
+		}
+	};
+
+	pagination();
 
 	vscode.languages.registerInlineCompletionItemProvider({ pattern: '**' }, provider);
 
