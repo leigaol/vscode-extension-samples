@@ -68,6 +68,11 @@ connection.onInitialize((params: InitializeParams) => {
 	return result;
 });
 
+connection.onRequest('zz', (param) => {
+	connection.console.log(`Request ${param}`);
+	return 10;
+});
+
 connection.onInitialized(() => {
 	if (hasConfigurationCapability) {
 		// Register for all configuration changes.
@@ -131,6 +136,8 @@ documents.onDidClose(e => {
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent(change => {
+
+	connection.console.log('We received an content change event');
 	validateTextDocument(change.document);
 });
 

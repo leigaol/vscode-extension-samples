@@ -34,7 +34,7 @@ export function activate(context: ExtensionContext) {
 	// Options to control the language client
 	const clientOptions: LanguageClientOptions = {
 		// Register the server for plain text documents
-		documentSelector: [{ scheme: 'file', language: 'plaintext' }],
+		documentSelector: [{ scheme: 'file', language: '*' }],
 		synchronize: {
 			// Notify the server about file changes to '.clientrc files contained in the workspace
 			fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
@@ -48,9 +48,14 @@ export function activate(context: ExtensionContext) {
 		serverOptions,
 		clientOptions
 	);
-
+	console.log("ST");	
 	// Start the client. This will also launch the server
 	client.start();
+
+
+	client.sendRequest("zz", "payload").then((result) => {
+		console.log(result);
+	});
 }
 
 export function deactivate(): Thenable<void> | undefined {
