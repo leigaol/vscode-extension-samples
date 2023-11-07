@@ -16,8 +16,12 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.helloWorld",
-				"title": "Hello World"
+				"command": "extension.list",
+				"title": "List Customization "
+			},
+			{
+				"command": "extension.select",
+				"title": "Select Customization"
 			}
 		]
 	},
